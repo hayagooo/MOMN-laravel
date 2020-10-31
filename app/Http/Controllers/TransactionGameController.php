@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class TransactionGameController extends Controller
 {
+
+    private $tf;
+
+    public function __construct(Transaction_game $tf)
+    {
+        $this->tf = $tf;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,8 @@ class TransactionGameController extends Controller
      */
     public function index()
     {
-        //
+        $transaction = $this->tf->paginate(10);
+        return $this->onSuccess("Data Transaksi Game Ditemukan", $transaction);
     }
 
     /**
@@ -35,7 +44,12 @@ class TransactionGameController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $transaction = $this->tf->create($request->all());
+            return $this->onSuccess("Data Transaksi Game Ditambahkan", $transaction);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -44,9 +58,12 @@ class TransactionGameController extends Controller
      * @param  \App\Models\Transaction_game  $transaction_game
      * @return \Illuminate\Http\Response
      */
-    public function show(Transaction_game $transaction_game)
+    public function show($id)
     {
-        //
+        $transaction = $this->tf->find($id);
+        $price = $transaction->Price;
+        $game = $transaction->Game;
+        return $this->onSuccess("Data Transaksi Game Ditemukan", $transaction);
     }
 
     /**
@@ -67,9 +84,15 @@ class TransactionGameController extends Controller
      * @param  \App\Models\Transaction_game  $transaction_game
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Transaction_game $transaction_game)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $transaction = $this->tf->where('id', $id)->update($request->all());
+            $mTransaction = $this->tf->find($id);
+            return $this->onSuccess("Data Transaksi Game Diupdate", $mTransaction);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -78,8 +101,13 @@ class TransactionGameController extends Controller
      * @param  \App\Models\Transaction_game  $transaction_game
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Transaction_game $transaction_game)
+    public function destroy($id)
     {
-        //
+        try {
+            $transaction = $this->tf->destroy($id);
+            return $this->onSuccess("Data Transaksi Game Dihapus", null);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 }

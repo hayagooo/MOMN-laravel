@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class CategoryGameController extends Controller
 {
+
+    private $category;
+
+    public function __construct(Category_game $category)
+    {
+        $this->category = $category;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,8 @@ class CategoryGameController extends Controller
      */
     public function index()
     {
-        //
+        $category = $this->category->paginate(10);
+        return $this->onSuccess("Category Game Ditemukan", $category);
     }
 
     /**
@@ -35,7 +44,12 @@ class CategoryGameController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $category = $this->category->create($request->all());
+            return $this->onSuccess("Category Game Berhasil Ditambahkan", $category);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -44,9 +58,10 @@ class CategoryGameController extends Controller
      * @param  \App\Models\Category_game  $category_game
      * @return \Illuminate\Http\Response
      */
-    public function show(Category_game $category_game)
+    public function show($id)
     {
-        //
+        $category = $this->category->find($id);
+        return $this->onSuccess("Category Game Ditemukan", $category);
     }
 
     /**
@@ -67,9 +82,15 @@ class CategoryGameController extends Controller
      * @param  \App\Models\Category_game  $category_game
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category_game $category_game)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $category = $this->category->where('id', $id)->update($request->all());
+            $mCategory = $this->category->find($id);
+            return $this->onSuccess("Category Game Behasil Diupdate", $mCategory);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -78,8 +99,13 @@ class CategoryGameController extends Controller
      * @param  \App\Models\Category_game  $category_game
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category_game $category_game)
+    public function destroy($id)
     {
-        //
+        try {
+            $category = $this->category->destroy($id);
+            return $this->onSuccess("Category Game Berhasil Dihapus", $category);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 }

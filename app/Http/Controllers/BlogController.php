@@ -18,9 +18,9 @@ class BlogController extends Controller
 
     public function __construct()
     {
-        $this->folderThumbnail = public_path().'/images/blog/thumbnails';
+        $this->folderThumbnail = public_path().'/images/blog/thumbnail';
         $this->folderPath = public_path().'/images/blog';
-        $this->fileDimen = 100;
+        $this->fileDimen = 200;
     }
 
     /**
@@ -145,12 +145,19 @@ class BlogController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request, [
+            'banner' => 'image|mimes:jpeg,jpg,png,svg',
+            'title' => 'required',
+            'description' => 'required',
+        ]);
         try {
             $blog = Blog::find($id);
             $blog->title = $request->title;
             $blog->description = $request->description;
             $blog->id_category = $request->category;
             if($request->hasFile('banner')) {
+                unlink($this->folderPath.'/'.$blog->banner);
+                unlink($this->folderThumbnail.'/'.$blog->banner);
                 if(!File::isDirectory($this->folderThumbnail)) {
                     File::makeDirectory($this->folderThumbnail);
                 }
@@ -164,8 +171,6 @@ class BlogController extends Controller
                     $constraint->aspectRatio();
                 })->save($this->folderThumbnail.'/'.$filename);
                 $file->move($this->folderPath, $filename);
-                unlink($this->folderPath.'/'.$blog->banner);
-                unlink($this->folderThumbnail.'/'.$blog->banner);
                 $blog->banner = $filename;
             }
             $blog->save();
@@ -185,9 +190,9 @@ class BlogController extends Controller
     {
         try {
             $blog = Blog::find($id);
-            $blog->delete();
             unlink($this->folderPath.'/'.$blog->banner);
             unlink($this->folderThumbnail.'/'.$blog->banner);
+            $blog->delete();
             return $this->onSuccess("Blog berhasil dihapus", null);
         } catch (\Exception $e) {
             return $this->exception($e);

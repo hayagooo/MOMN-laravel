@@ -93,7 +93,8 @@ class CategoryBlogController extends Controller
                 'name' => 'required',
             ]);
             $category = $this->category->where('id', $id)->update($request->all());
-            return $this->onSuccess("Category Blog Berhasil Diupdate", $category);
+            $mCategory = $this->category->find($id);
+            return $this->onSuccess("Category Blog Berhasil Diupdate", $mCategory);
 
         } catch (\Exception $e) {
             return $this->exception($e);

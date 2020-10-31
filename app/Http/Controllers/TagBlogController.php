@@ -24,10 +24,7 @@ class TagBlogController extends Controller
     public function index()
     {
         $tags = $this->tag->paginate(6);
-        return response()->json([
-            'status' => 'success',
-            'data' => $tags
-        ]);
+        return $this->onSuccess("Tags Berhasil Ditemukan", $tags);
     }
 
     /**
@@ -53,11 +50,7 @@ class TagBlogController extends Controller
                 'name' => 'required'
             ]);
             $tag = $this->tag->create($request->all());
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Tags berhasil ditambahkan',
-                'data' => $tag
-            ]);
+            return $this->onSuccess("Tags Berhasil Ditambahkan", $tag);
         } catch (\Exception $e) {
             return $this->exception($e);
         }
@@ -72,10 +65,7 @@ class TagBlogController extends Controller
     public function show($id)
     {
         $tag = Tag_blog::find($id);
-        return response()->json([
-            'status' => 'success',
-            'data' => $tag,
-        ]);
+        return $this->onSuccess("Tags Berhasil Ditemukan", $tag);
     }
 
     /**
@@ -101,11 +91,7 @@ class TagBlogController extends Controller
         try {
             $tag = $this->tag->where('id', $id)->update($request->all());
             $mTag = Tag_blog::find($id);
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Tags berhasil diupdate',
-                'data' => $mTag
-            ]);
+            return $this->onSuccess("Tags Berhasil Diupdate", $mTag);
         } catch (\Exception $e) {
             return $this->exception($e);
         }
@@ -121,10 +107,7 @@ class TagBlogController extends Controller
     {
         try {
             $tag = $this->tag->destroy($id);
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Tags berhasil dihapus',
-            ]);
+            return $this->onSuccess("Tags Berhasil Dihapus", null);
         } catch (\Exception $e) {
             return $this->exception($e);
         }

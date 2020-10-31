@@ -11,6 +11,8 @@ class Blog extends Model
 
     public $table = 'blog';
 
+    protected $fillable = ['title', 'banner', 'description', 'id_category'];
+
     public function Category()
     {
         return $this->belongsTo(Category_blog::class, 'id_category');
