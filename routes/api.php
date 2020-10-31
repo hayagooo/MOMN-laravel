@@ -24,3 +24,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::resource('blog', BlogController::class);
 Route::resource('blog/tags', TagBlogController::class);
 Route::resource('blog/category', CategoryBlogController::class);
+
+// searching
+Route::post('blog/q/', [BlogController::class, 'search']);
+
+// relation
+Route::post('blog/add/tags', [BlogController::class, 'addTags']);
+Route::post('tag/add/blogs', [TagBlogController::class, 'addBlog']);

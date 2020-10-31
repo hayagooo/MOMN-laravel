@@ -12,4 +12,9 @@ class Category_blog extends Model
     public $table = 'category_blog';
 
     protected $fillable = ['name'];
+
+    public function Blog()
+    {
+        return $this->hasMany(Blog::class);
+    }
 }

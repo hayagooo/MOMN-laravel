@@ -10,4 +10,14 @@ class Blog extends Model
     use HasFactory;
 
     public $table = 'blog';
+
+    public function Category()
+    {
+        return $this->belongsTo(Category_blog::class, 'id_category');
+    }
+
+    public function Tags()
+    {
+        return $this->belongsToMany(Tag_blog::class, 'tag_blog', 'id_blog', 'id_tag');
+    }
 }

@@ -30,14 +30,33 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
-        // $q = Blog::query();
-        // if($request->has('title')) {
-        //     $q->where('title', 'like', $request->get('title'));
-        // }
-        // if($request->has('category')) {
-        //     $q->where('id_category', $request->get('category'));
-        // }
-        $blog = Blog::paginate(9);
+        $blog = Blog::paginate(10);
+        return $this->onSuccess("Data Blog Ditemukan", $blog);
+    }
+
+    public function search(Request $request)
+    {
+        if($request->has('title') || $request->has('category')) {
+            $q = Blog::query();
+            if($request->title != '' && $request->title != null) {
+                $blog = $q->where('title', 'LIKE', "%".$request->title."%")
+                        ->paginate(10);
+            }
+            if($request->category != '' && $request->category != null) {
+                $blog = $q->where('id_category', 'LIKE', "%".$request->category."%")
+                        ->paginate(10);
+            }
+        } else if($request->has('tags')) {
+            $blog = Blog::join('tag_blog', 'blog.id', '=', 'tag_blog.id_blog')
+                        ->join('tag', 'tag.id', '=', 'tag_blog.id_tag')
+                        ->where('tag.id', '=', $request->tags)
+                        ->with('Tags')
+                        ->distinct()
+                        ->select('blog.*', 'tag.*')
+                        ->paginate(10);
+        } else {
+            $blog = Blog::paginate(10);
+        }
         return $this->onSuccess("Data Blog Ditemukan", $blog);
     }
 
@@ -101,6 +120,8 @@ class BlogController extends Controller
     public function show($id)
     {
         $blog = Blog::find($id);
+        $category = $blog->Category;
+        $tags = $blog->Tags;
         return $this->onSuccess("Blog ditemukan", $blog);
     }
 
@@ -173,4 +194,16 @@ class BlogController extends Controller
         }
     }
 
+    public function addTags(Request $request)
+    {
+        try {
+            $id_blog = $request->blog;
+            $id_tag = $request->tag;
+            $blog = Blog::find($id_blog);
+            $blog->Tags()->attach($id_tag);
+            return $this->onSuccess("Relasi berhasil ditambahkan", $blog);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
+    }
 }

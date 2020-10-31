@@ -12,4 +12,9 @@ class Tag_blog extends Model
     public $table = 'tag';
 
     protected $fillable = ['name'];
+
+    public function Blog()
+    {
+        return $this->belongsToMany(Blog::class, 'tag_blog', 'id_tag', 'id_blog');
+    }
 }

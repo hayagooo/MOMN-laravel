@@ -129,4 +129,17 @@ class TagBlogController extends Controller
             return $this->exception($e);
         }
     }
+
+    public function addBlog(Request $request)
+    {
+        try {
+            $id_blog = $request->blog;
+            $id_tag = $request->tag;
+            $tags = Tag_blog::find($id_tag);
+            $tags->Blog()->attach($id_blog);
+            return $this->onSuccess("Relasi Tags berhasil ditambahkan", $tags);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
+    }
 }
