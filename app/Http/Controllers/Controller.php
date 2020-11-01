@@ -14,11 +14,19 @@ class Controller extends BaseController
 
     public function onSuccess($message, $data)
     {
-        return response()->json([
-            'status' => 'success',
-            'message' => $message,
-            'data' => $data,
-        ]);
+        if($data != '' || $data != null || $data != []) {
+            return response()->json([
+                'status' => 'success',
+                'message' => $message,
+                'data' => $data,
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'null',
+                'message' => 'Data telah dihapus / tidak ditemukan',
+                'data' => $data,
+            ]);
+        }
     }
 
     public function exception(\Exception $e)

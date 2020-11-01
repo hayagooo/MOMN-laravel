@@ -3,7 +3,9 @@
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CategoryBlogController;
 use App\Http\Controllers\CategoryGameController;
+use App\Http\Controllers\CategoryPartnerController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PricingGameController;
 use App\Http\Controllers\TagBlogController;
 use App\Http\Controllers\TransactionGameController;
@@ -24,6 +26,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
 // Crud //
 // Blog
 Route::resource('blog', BlogController::class);
@@ -34,6 +38,11 @@ Route::resource('game', GameController::class);
 Route::resource('price/game', PricingGameController::class);
 Route::resource('category/game', CategoryGameController::class);
 Route::resource('transaction/game', TransactionGameController::class);
+// Partner
+Route::resource('partner', PartnerController::class);
+Route::resource('category/partner', CategoryPartnerController::class);
+// End Crud //
+
 
 // Searching //
 // Blog
@@ -45,6 +54,9 @@ Route::post('game/q/', [GameController::class, 'search']);
 Route::post('category/game/q/', [CategoryGameController::class, 'search']);
 Route::post('price/game/q/', [PricingGameController::class, 'search']);
 Route::post('transaction/game/q/', [TransactionGameController::class, 'search']);
+// Partner
+Route::post('partner/q/', [PartnerController::class, 'search']);
+Route::post('category/partner/q/', [CategoryPartnerController::class, 'search']);
 
 // relation many to many
 Route::post('blog/add/tags', [BlogController::class, 'addTags']);

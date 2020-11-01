@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class CategoryPartnerController extends Controller
 {
+
+    public $ctr;
+
+    public function __construct(Category_partner $category)
+    {
+        $this->ctr = $category;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,21 @@ class CategoryPartnerController extends Controller
      */
     public function index()
     {
-        //
+        $category = $this->ctr->all();
+        return $this->onSuccess("Category Partner Ditemukan", $category);
+    }
+
+    public function search(Request $request)
+    {
+        if($request->has('name')) {
+            $q = $this->ctr->query();
+            if($request->name != null && $request->name != '') {
+                $ctr = $q->where('name', 'LIKE', '%'.$request->name.'%')->get();
+            }
+        } else {
+            $ctr = $this->ctr->all();
+        }
+        return $this->onSuccess("Category Partner Ditemukan", $ctr);
     }
 
     /**
@@ -35,7 +57,12 @@ class CategoryPartnerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $category = $this->ctr->create($request->all());
+            return $this->onSuccess("Category Partner Berhasil Ditambahkan", $category);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -44,9 +71,10 @@ class CategoryPartnerController extends Controller
      * @param  \App\Models\Category_partner  $category_partner
      * @return \Illuminate\Http\Response
      */
-    public function show(Category_partner $category_partner)
+    public function show($id)
     {
-        //
+        $category = $this->ctr->find($id);
+        return $this->onSuccess("Category Partner Ditemukan", $category);
     }
 
     /**
@@ -67,9 +95,15 @@ class CategoryPartnerController extends Controller
      * @param  \App\Models\Category_partner  $category_partner
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category_partner $category_partner)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $category = $this->ctr->where('id', $id)->update($request->all());
+            $mCategory = $this->ctr->find($id);
+            return $this->onSuccess("Category Partner Diupdate", $mCategory);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -78,8 +112,13 @@ class CategoryPartnerController extends Controller
      * @param  \App\Models\Category_partner  $category_partner
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category_partner $category_partner)
+    public function destroy($id)
     {
-        //
+        try {
+            $category = $this->ctr->destroy($id);
+            return $this->onSuccess("Category Partner Dihapus", null);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 }

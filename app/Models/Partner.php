@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Partner extends Model
 {
     use HasFactory;
+
+    public $table = 'partner';
+
+    protected $fillable = ['name', 'logo', 'id_category'];
+
+    public function Category()
+    {
+        return $this->belongsTo(Category_partner::class, 'id_category');
+    }
 }
