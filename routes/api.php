@@ -35,9 +35,17 @@ Route::resource('price/game', PricingGameController::class);
 Route::resource('category/game', CategoryGameController::class);
 Route::resource('transaction/game', TransactionGameController::class);
 
-// searching
+// Searching //
+// Blog
 Route::post('blog/q/', [BlogController::class, 'search']);
+Route::post('category/blog/q/', [CategoryBlogController::class, 'search']);
+Route::post('tags/blog/q/', [TagBlogController::class, 'search']);
+// Game
+Route::post('game/q/', [GameController::class, 'search']);
+Route::post('category/game/q/', [CategoryGameController::class, 'search']);
+Route::post('price/game/q/', [PricingGameController::class, 'search']);
+Route::post('transaction/game/q/', [TransactionGameController::class, 'search']);
 
-// relation
+// relation many to many
 Route::post('blog/add/tags', [BlogController::class, 'addTags']);
 Route::post('tag/add/blogs', [TagBlogController::class, 'addBlog']);

@@ -26,6 +26,19 @@ class CategoryGameController extends Controller
         return $this->onSuccess("Category Game Ditemukan", $category);
     }
 
+    public function search(Request $request)
+    {
+        if($request->has('name')) {
+            $q = Category_game::query();
+            if($request->name != null && $request->name != '') {
+                $category = $q->where('name', 'LIKE', '%'.$request->name.'%')->get();
+            }
+        } else {
+            $category = Category_game::all();
+        }
+        return $this->onSuccess("Category Game Ditemukan", $category);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -26,6 +26,19 @@ class CategoryBlogController extends Controller
         return $this->onSuccess("Category ditemukan", $category);
     }
 
+    public function search(Request $request)
+    {
+        if($request->has('name')) {
+            $q = Category_blog::query();
+            if($request->name != null && $request->name != '') {
+                $category = $q->where('name', 'LIKE', "%".$request->name."%")->get();
+            }
+        } else {
+            $category = Category_blog::paginate(10);
+        }
+        return $this->onSuccess("Category Ditemukan", $category);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

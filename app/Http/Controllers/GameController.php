@@ -40,6 +40,22 @@ class GameController extends Controller
         }
     }
 
+    public function search(Request $request)
+    {
+        if($request->has('name') || $request->has('category')) {
+            $q = Game::query();
+            if($request->name != null && $request->name != '') {
+                $game = $q->where('name', 'LIKE', '%'.$request->name.'%')->get();
+            }
+            if($request->category != null && $request->category != '') {
+                $game = $q->where('id_category', $request->category)->get();
+            }
+        } else {
+            $game = Game::all();
+        }
+        return $this->onSuccess("Data Game Ditemukan", $game);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -27,6 +27,19 @@ class TagBlogController extends Controller
         return $this->onSuccess("Tags Berhasil Ditemukan", $tags);
     }
 
+    public function search(Request $request)
+    {
+        if($request->has('name')) {
+            $q = Tag_blog::query();
+            if($request->name != null && $request->name != '') {
+                $tag = $q->where('name', 'LIKE', "%".$request->name."%")->get();
+            }
+        } else {
+            $tag = Tag_blog::all();
+        }
+        return $this->onSuccess("Tags Berhasil Ditemukan", $tag);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

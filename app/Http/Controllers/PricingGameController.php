@@ -29,6 +29,19 @@ class PricingGameController extends Controller
         return $this->onSuccess("Data Price Game Ditemukan", $price);
     }
 
+    public function search(Request $request)
+    {
+        if($request->has('game')) {
+            $q = Pricing_game::query();
+            if($request->game != null && $request->game != '') {
+                $price = $q->where('id_game', $request->game)->get();
+            }
+        } else {
+            $price = Pricing_game::all();
+        }
+        return $this->onSuccess("Data Price Game Ditemukan", $price);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

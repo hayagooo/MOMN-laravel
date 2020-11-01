@@ -52,6 +52,25 @@ class TransactionGameController extends Controller
         }
     }
 
+    public function search(Request $request)
+    {
+        if($request->has('game') || $request->has('name') || $request->has('token')) {
+            $q = Transaction_game::query();
+            if($request->game != null && $request->game != '') {
+                $tf = $q->where('id_game', $request->game)->get();
+            }
+            if($request->name != null && $request->name != '') {
+                $tf = $q->where('name_account', 'LIKE', '%'.$request->name.'%')->get();
+            }
+            if($request->token != null && $request->token != '') {
+                $tf = $q->where('token_tf', $request->token)->get();
+            }
+        } else {
+            $tf = Transaction_game::all();
+        }
+        return $this->onSuccess("Data Transaksi Game Ditemukan", $tf);
+    }
+
     /**
      * Display the specified resource.
      *
