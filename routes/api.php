@@ -4,9 +4,11 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CategoryBlogController;
 use App\Http\Controllers\CategoryGameController;
 use App\Http\Controllers\CategoryPartnerController;
+use App\Http\Controllers\CategoryPromoController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PricingGameController;
+use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TagBlogController;
 use App\Http\Controllers\TransactionGameController;
 use Illuminate\Http\Request;
@@ -41,8 +43,10 @@ Route::resource('transaction/game', TransactionGameController::class);
 // Partner
 Route::resource('partner', PartnerController::class);
 Route::resource('category/partner', CategoryPartnerController::class);
+// Promo
+Route::resource('promo', PromoController::class);
+Route::resource('category/promo', CategoryPromoController::class);
 // End Crud //
-
 
 // Searching //
 // Blog
@@ -57,6 +61,10 @@ Route::post('transaction/game/q/', [TransactionGameController::class, 'search'])
 // Partner
 Route::post('partner/q/', [PartnerController::class, 'search']);
 Route::post('category/partner/q/', [CategoryPartnerController::class, 'search']);
+// Promo
+Route::post('promo/q/', [PromoController::class, 'search']);
+Route::post('categeory/promo/q/', [CategoryPromoController::class, 'search']);
+// Searching //
 
 // relation many to many
 Route::post('blog/add/tags', [BlogController::class, 'addTags']);

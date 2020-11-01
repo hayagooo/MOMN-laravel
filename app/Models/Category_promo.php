@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Category_promo extends Model
 {
     use HasFactory;
+
+    public $table = 'category_promo';
+
+    protected $fillable = ['name'];
+
+    public function Promo()
+    {
+        return $this->hasMany(Promo::class, 'id');
+    }
 }

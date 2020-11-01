@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class CategoryPromoController extends Controller
 {
+
+    public $ctr;
+
+    public function __construct(Category_promo $category_promo)
+    {
+        $this->ctr = $category_promo;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,21 @@ class CategoryPromoController extends Controller
      */
     public function index()
     {
-        //
+        $category_promo = $this->ctr->all();
+        return $this->onSuccess("Category Promo Ditemukan", $category_promo);
+    }
+
+    public function search(Request $request)
+    {
+        if($request->has('name')) {
+            $q = $this->ctr->query();
+            if($request->name != '' && $request->name != null) {
+                $category_promo = $q->where('name', 'LIKE', '%'.$request->name.'%');
+            }
+        } else {
+            $category_promo = $this->ctr->all();
+        }
+        return $this->onSuccess("Category Promo Ditemukan", $category_promo);
     }
 
     /**
@@ -35,7 +57,12 @@ class CategoryPromoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $category_promo = $this->ctr->create($request->all());
+            return $this->onSuccess("Category Promo Ditambahkan", $category_promo);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -44,9 +71,11 @@ class CategoryPromoController extends Controller
      * @param  \App\Models\Category_promo  $category_promo
      * @return \Illuminate\Http\Response
      */
-    public function show(Category_promo $category_promo)
+    public function show($id)
     {
-        //
+        $category_promo = $this->ctr->find($id);
+        $promo = $category_promo->Promo;
+        return $this->onSuccess("Category Promo Ditemukan", $category_promo);
     }
 
     /**
@@ -67,9 +96,15 @@ class CategoryPromoController extends Controller
      * @param  \App\Models\Category_promo  $category_promo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category_promo $category_promo)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $category_promo = $this->ctr->where('id', $id)->update($request->all());
+            $mCategory = $this->ctr->find($id);
+            return $this->onSuccess("Category Promo Diupdate", $mCategory);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -78,8 +113,13 @@ class CategoryPromoController extends Controller
      * @param  \App\Models\Category_promo  $category_promo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category_promo $category_promo)
+    public function destroy($id)
     {
-        //
+        try {
+            $category_promo = $this->ctr->destroy($id);
+            return $this->onSuccess("Category Promo Dihapus", null);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 }

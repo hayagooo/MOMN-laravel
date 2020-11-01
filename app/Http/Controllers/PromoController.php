@@ -4,9 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\Promo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
 
 class PromoController extends Controller
 {
+    public $folderBanner;
+    public $folderThumbnail;
+    public $dimenThumbnail;
+
+    public function __construct()
+    {
+        $this->folderBanner = public_path().'/images/promo';
+        $this->folderThumbnail = public_path().'/images/promo/thumbnail';
+        $this->dimenThumbnail = 100;
+    }
+
+    public function search(Request $request)
+    {
+        if($request->has('title') || $request->has('category')) {
+            $q = Promo::query();
+            if($request->title != '' && $request->title != null) {
+                $promo = $q->where('title', 'LIKE', '%'.$request->title.'%')->get();
+            }
+            if($request->category != '' && $request->category != null) {
+                $promo = $q->where('id_category', $request->category)->get();
+            }
+        } else {
+            $promo = Promo::all();
+        }
+        return $this->onSuccess("Promo Ditemukan", $promo);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +43,8 @@ class PromoController extends Controller
      */
     public function index()
     {
-        //
+        $promo = Promo::all();
+        return $this->onSuccess("Promo Ditemukan", $promo);
     }
 
     /**
@@ -35,7 +65,35 @@ class PromoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $this->validate($request, [
+                'banner' => 'image|mimes:jpg,png,jpeg'
+            ]);
+            $promo = new Promo();
+            $promo->title = $request->title;
+            $promo->description = $request->description;
+            $promo->id_category = $request->category;
+            // if($request->hasFile('banner')) {
+            if(!File::isDirectory($this->folderThumbnail)) {
+                File::makeDirectory($this->folderThumbnail, $mode=0777, true, true);
+            }
+            if(!File::isDirectory($this->folderBanner)) {
+                File::makeDirectory($this->folderBanner, $mode=0777, true, true);
+            }
+            $file = $request->file('banner');
+            $fileName = 'promoBanner'.time().'.'.$file->extension();
+            $img = Image::make($file->path());
+            $img->resize($this->dimenThumbnail, $this->dimenThumbnail, function($constraint) {
+                $constraint->aspectRatio();
+            })->save($this->folderThumbnail.'/'.$fileName);
+            $file->move($this->folderBanner, $fileName);
+            $promo->banner = $fileName;
+            // }
+            $promo->save();
+            return $this->onSuccess("Promo Ditambahkan", $promo);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -44,9 +102,11 @@ class PromoController extends Controller
      * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function show(Promo $promo)
+    public function show($id)
     {
-        //
+        $promo = Promo::find($id);
+        $category = $promo->Category;
+        return $this->onSuccess("Promo Ditemukan", $promo);
     }
 
     /**
@@ -67,9 +127,39 @@ class PromoController extends Controller
      * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Promo $promo)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $this->validate($request, [
+                'banner' => 'image|mimes:jpg,jpeg,png'
+            ]);
+            $promo = Promo::find($id);
+            $promo->title = $request->title;
+            $promo->description = $request->description;
+            $promo->id_category = $request->category;
+            if($request->hasFile('banner')) {
+                if(!File::isDirectory($this->folderBanner)) {
+                    File::makeDirectory($this->folderBanner, $mode=0777, true, true);
+                }
+                if(!File::isDirectory($this->folderThumbnail)) {
+                    File::makeDirectory($this->folderThumbnail, $mode=0777, true, true);
+                }
+                unlink($this->folderBanner.'/'.$promo->banner);
+                unlink($this->folderThumbnail.'/'.$promo->banner);
+                $file = $request->file('banner');
+                $fileName = 'promoBanner'.time().'.'.$file->extension();
+                $img = Image::make($file->path());
+                $img->resize($this->dimenThumbnail, $this->dimenThumbnail, function($constraint) {
+                    $constraint->aspectRatio();
+                })->save($this->folderThumbnail.'/'.$fileName);
+                $file->move($this->folderBanner, $fileName);
+                $promo->banner = $fileName;
+            }
+            $promo->save();
+            return $this->onSuccess("Promo Diupdate", $promo);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 
     /**
@@ -78,8 +168,16 @@ class PromoController extends Controller
      * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Promo $promo)
+    public function destroy($id)
     {
-        //
+        try {
+            $promo = Promo::find($id);
+            unlink($this->folderBanner.'/'.$promo->banner);
+            unlink($this->folderThumbnail.'/'.$promo->banner);
+            $promo->delete();
+            return $this->onSuccess("Promo Dihapus", null);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
     }
 }
