@@ -26,6 +26,12 @@ class CategoryPromoController extends Controller
         return $this->onSuccess("Category Promo Ditemukan", $category_promo);
     }
 
+    public function pagination($page)
+    {
+        $category_promo = $this->ctr->paginate($page);
+        return $this->onSuccess("Category Promo Ditemukan", $category_promo);
+    }
+
     public function search(Request $request)
     {
         if($request->has('name')) {

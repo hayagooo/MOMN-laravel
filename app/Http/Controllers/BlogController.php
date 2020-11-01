@@ -30,7 +30,13 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
-        $blog = Blog::paginate(10);
+        $blog = Blog::all();
+        return $this->onSuccess("Data Blog Ditemukan", $blog);
+    }
+
+    public function pagination($page)
+    {
+        $blog = Blog::paginate($page);
         return $this->onSuccess("Data Blog Ditemukan", $blog);
     }
 

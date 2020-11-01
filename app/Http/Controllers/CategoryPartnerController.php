@@ -26,6 +26,12 @@ class CategoryPartnerController extends Controller
         return $this->onSuccess("Category Partner Ditemukan", $category);
     }
 
+    public function pagination($page)
+    {
+        $category = $this->ctr->paginate($page);
+        return $this->onSuccess("Category Partner Ditemukan", $category);
+    }
+
     public function search(Request $request)
     {
         if($request->has('name')) {

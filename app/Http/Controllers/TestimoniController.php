@@ -30,6 +30,12 @@ class TestimoniController extends Controller
         return $this->onSuccess("Testimoni Ditemukan", $test);
     }
 
+    public function pagination($page)
+    {
+        $test = Testimoni::paginate($page);
+        return $this->onSuccess("Testimoni Ditemukan", $test);
+    }
+
     public function search(Request $request)
     {
         if($request->has('name') || $request->has('level')) {

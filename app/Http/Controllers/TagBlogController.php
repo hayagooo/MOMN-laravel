@@ -23,7 +23,13 @@ class TagBlogController extends Controller
 
     public function index()
     {
-        $tags = $this->tag->paginate(6);
+        $tags = $this->tag->all();
+        return $this->onSuccess("Tags Berhasil Ditemukan", $tags);
+    }
+
+    public function pagination($page)
+    {
+        $tags = $this->tag->paginate($page);
         return $this->onSuccess("Tags Berhasil Ditemukan", $tags);
     }
 

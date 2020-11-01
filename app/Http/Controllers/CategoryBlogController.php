@@ -22,7 +22,13 @@ class CategoryBlogController extends Controller
      */
     public function index()
     {
-        $category = $this->category->paginate(10);
+        $category = $this->category->all();
+        return $this->onSuccess("Category ditemukan", $category);
+    }
+
+    public function pagination($page)
+    {
+        $category = $this->category->paginate($page);
         return $this->onSuccess("Category ditemukan", $category);
     }
 

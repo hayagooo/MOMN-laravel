@@ -66,7 +66,7 @@ Route::post('partner/q/', [PartnerController::class, 'search']);
 Route::post('category/partner/q/', [CategoryPartnerController::class, 'search']);
 // Promo
 Route::post('promo/q/', [PromoController::class, 'search']);
-Route::post('categeory/promo/q/', [CategoryPromoController::class, 'search']);
+Route::post('category/promo/q/', [CategoryPromoController::class, 'search']);
 // Testimoni
 Route::post('testimoni/q/', [TestimoniController::class, 'search']);
 // Searching //
@@ -74,3 +74,22 @@ Route::post('testimoni/q/', [TestimoniController::class, 'search']);
 // relation many to many
 Route::post('blog/add/tags', [BlogController::class, 'addTags']);
 Route::post('tag/add/blogs', [TagBlogController::class, 'addBlog']);
+
+// Pagination //
+// Blog
+Route::get('blog/paginate/{page}', [BlogController::class, 'pagination']);
+Route::get('category/blog/paginate/{page}', [CategoryBlogController::class, 'pagination']);
+Route::get('tags/blog/paginate/{page}', [TagBlogController::class, 'pagination']);
+// Game
+Route::get('game/paginate/{page}', [GameController::class, 'pagination']);
+Route::get('category/game/paginate/{page}', [CategoryGameController::class, 'pagination']);
+Route::get('price/game/paginate/{page}', [PricingGameController::class, 'pagination']);
+Route::get('transaction/game/paginate/{page}', [TransactionGameController::class, 'pagination']);
+// Partner
+Route::get('partner/paginate/{page}', [PartnerController::class, 'pagination']);
+Route::get('category/partner/paginate/{page}', [CategoryPartnerController::class, 'pagination']);
+// Promo
+Route::get('promo/paginate/{page}', [PromoController::class, 'pagination']);
+Route::get('category/promo/paginate/{page}', [CategoryPromoController::class, 'pagination']);
+// Testimoni
+Route::get('testimoni/paginate/{page}', [TestimoniController::class, 'pagination']);

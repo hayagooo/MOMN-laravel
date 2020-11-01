@@ -22,7 +22,13 @@ class TransactionGameController extends Controller
      */
     public function index()
     {
-        $transaction = $this->tf->paginate(10);
+        $transaction = $this->tf->all();
+        return $this->onSuccess("Data Transaksi Game Ditemukan", $transaction);
+    }
+
+    public function pagination($page)
+    {
+        $transaction = $this->tf->paginate($page);
         return $this->onSuccess("Data Transaksi Game Ditemukan", $transaction);
     }
 

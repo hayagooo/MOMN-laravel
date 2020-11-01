@@ -32,12 +32,14 @@ class GameController extends Controller
      */
     public function index()
     {
-        try {
-            $game = Game::all();
-            return $this->onSuccess("Data Game Ditemukan", $game);
-        } catch (\Exception $e) {
-            return $this->exception($e);
-        }
+        $game = Game::all();
+        return $this->onSuccess("Data Game Ditemukan", $game);
+    }
+
+    public function pagination($page)
+    {
+        $game = Game::paginate($page);
+        return $this->onSuccess("Data Game Ditemukan", $game);
     }
 
     public function search(Request $request)

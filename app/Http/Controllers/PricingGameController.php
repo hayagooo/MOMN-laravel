@@ -29,6 +29,12 @@ class PricingGameController extends Controller
         return $this->onSuccess("Data Price Game Ditemukan", $price);
     }
 
+    public function pagination($page)
+    {
+        $price = Pricing_game::paginate($page);
+        return $this->onSuccess("Data Price Game Ditemukan", $price);
+    }
+
     public function search(Request $request)
     {
         if($request->has('game')) {

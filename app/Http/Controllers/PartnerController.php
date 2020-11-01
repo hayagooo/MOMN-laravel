@@ -30,6 +30,12 @@ class PartnerController extends Controller
         return $this->onSuccess("Partner Ditemukan", $partner);
     }
 
+    public function pagination($page)
+    {
+        $partner = Partner::paginate($page);
+        return $this->onSuccess("Partner Ditemukan", $partner);
+    }
+
     public function search(Request $request)
     {
         if($request->has('name') || $request->has('category')) {

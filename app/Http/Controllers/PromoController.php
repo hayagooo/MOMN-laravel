@@ -47,6 +47,12 @@ class PromoController extends Controller
         return $this->onSuccess("Promo Ditemukan", $promo);
     }
 
+    public function pagination($page)
+    {
+        $promo = Promo::paginate($page);
+        return $this->onSuccess("Promo Ditemukan", $promo);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
