@@ -10,6 +10,7 @@ use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PricingGameController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TagBlogController;
+use App\Http\Controllers\TestimoniController;
 use App\Http\Controllers\TransactionGameController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,8 @@ Route::resource('category/partner', CategoryPartnerController::class);
 // Promo
 Route::resource('promo', PromoController::class);
 Route::resource('category/promo', CategoryPromoController::class);
+// Testimoni
+Route::resource('testimoni', TestimoniController::class);
 // End Crud //
 
 // Searching //
@@ -64,6 +67,8 @@ Route::post('category/partner/q/', [CategoryPartnerController::class, 'search'])
 // Promo
 Route::post('promo/q/', [PromoController::class, 'search']);
 Route::post('categeory/promo/q/', [CategoryPromoController::class, 'search']);
+// Testimoni
+Route::post('testimoni/q/', [TestimoniController::class, 'search']);
 // Searching //
 
 // relation many to many
