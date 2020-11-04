@@ -14,8 +14,12 @@
         "fzaninotto/faker": "^1.9",
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.5",
+        "kreait/laravel-firebase": "^2.4",
         "laravel/framework": "^8.0",
-        "laravel/tinker": "^2.0"
+        "laravel/jetstream": "^1.5",
+        "laravel/passport": "^10.0",
+        "laravel/tinker": "^2.0",
+        "laravel/ui": "^3.0"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",
