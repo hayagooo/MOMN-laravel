@@ -20,7 +20,7 @@ class Game extends Model
 
     public function Price()
     {
-        return $this->hasMany(Pricing_game::class, 'id');
+        return $this->hasMany(Pricing_game::class, 'id_game');
     }
 
     public function Transaction()

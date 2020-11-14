@@ -21,8 +21,8 @@ class GameController extends Controller
         $this->folderThumbnail = public_path().'/images/game/thumbnail';
         $this->folderLogo = public_path().'/images/game/logo';
         $this->folderImage = public_path().'/images/game/';
-        $this->dimenLogo = 100;
-        $this->dimenThumnail = 200;
+        $this->dimenLogo = 250;
+        $this->dimenThumnail = 450;
     }
 
     /**
@@ -54,6 +54,27 @@ class GameController extends Controller
             }
         } else {
             $game = Game::all();
+        }
+        return $this->onSuccess("Data Game Ditemukan", $game);
+    }
+
+    public function notPopular($page) {
+        $game = Game::where('id_category', '!=', 4)->paginate($page);
+        return $this->onSuccess("Data Game Ditemukan", $game);
+    }
+
+    public function searchPaginate(Request $request, $page)
+    {
+        if($request->has('name') || $request->has('category')) {
+            $q = Game::query();
+            if($request->name != null && $request->name != '') {
+                $game = $q->where('name', 'LIKE', '%'.$request->name.'%')->paginate($page);
+            }
+            if($request->category != null && $request->category != '') {
+                $game = $q->where('id_category', $request->category)->paginate($page);
+            }
+        } else {
+            $game = Game::paginate($page);
         }
         return $this->onSuccess("Data Game Ditemukan", $game);
     }

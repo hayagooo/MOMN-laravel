@@ -15,7 +15,7 @@ class PricingGameController extends Controller
     public function __construct()
     {
         $this->folderBanner = public_path().'/images/game/pricing';
-        $this->dimenBanner = 150;
+        $this->dimenBanner = 450;
     }
 
     /**

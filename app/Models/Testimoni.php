@@ -11,5 +11,5 @@ class Testimoni extends Model
 
     public $table = 'testimoni';
 
-    protected $fillable = ['name', 'age', 'caption', 'level', 'photo'];
+    protected $fillable = ['name', 'age', 'caption', 'level', 'photo', 'photo_png'];
 }

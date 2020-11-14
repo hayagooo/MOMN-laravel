@@ -11,7 +11,7 @@ class Transaction_game extends Model
 
     public $table = 'transaction_game';
 
-    protected $fillable = ['id_account', 'name_account', 'phone', 'token_tf', 'id_game', 'id_price'];
+    protected $fillable = ['id_account', 'name_account', 'phone', 'email', 'token_tf', 'id_game', 'id_price'];
 
     public function Game()
     {

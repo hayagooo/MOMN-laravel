@@ -12,11 +12,13 @@ class TestimoniController extends Controller
 
     public $path;
     public $dimen;
+    public $dimenPng;
 
     public function __construct()
     {
         $this->path = public_path().'/images/testimoni';
-        $this->dimen = 200;
+        $this->dimen = 500;
+        $this->dimenPng = 400;
     }
 
     /**
@@ -72,7 +74,8 @@ class TestimoniController extends Controller
     {
         try {
             $this->validate($request, [
-                'photo' => 'image|mimes:jpg,png,jpeg'
+                'photo' => 'image|mimes:jpg,png,jpeg',
+                'photo_png' => 'image|mimes:png',
             ]);
             $test = new Testimoni();
             $test->name = $request->name;
@@ -92,6 +95,15 @@ class TestimoniController extends Controller
             })->save($this->path.'/'.$fileName);
             $test->photo = $fileName;
             // }
+            if($request->hasFile('photo_png')) {
+                $filePng = $request->file('photo_png');
+                $fileNamePng = "FilePng".time().'.'.$filePng->extension();
+                $imgPng = Image::make($filePng->path());
+                $imgPng->resize($this->dimenPng, $this->dimenPng, function($contraint) {
+                    $contraint->aspectRatio();
+                })->save($this->path.'/'.$fileNamePng);
+                $test->photo_png = $fileNamePng;
+            }
             $test->save();
             return $this->onSuccess("Testimoni Ditambahkan", $test);
         } catch (\Exception $e) {
@@ -134,6 +146,7 @@ class TestimoniController extends Controller
         try {
             $this->validate($request, [
                 'photo' => 'image|mimes:jpeg,jpg,png',
+                'photo_png' => 'image|mimes:png',
             ]);
             $test = Testimoni::find($id);
             $test->name = $request->name;
@@ -153,6 +166,15 @@ class TestimoniController extends Controller
                     $contraint->aspectRatio();
                 })->save($this->path.'/'.$fileName);
                 $test->photo = $fileName;
+            }
+            if($request->hasFile('photo_png')) {
+                $filePng = $request->file($this->path);
+                $fileNamePng = "FilePng".time().'.'.$filePng->extension();
+                $imgPng = Image::make($filePng->path());
+                $imgPng->resize($this->dimenPng, $this->dimenPng, function($contraint) {
+                    $contraint->aspectRatio();
+                })->save($this->path.'/'.$fileNamePng);
+                $test->photo_png = $fileNamePng;
             }
             $test->save();
             return $this->onSuccess("Testimoni Diupdate", $test);

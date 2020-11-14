@@ -9,8 +9,7 @@
 <body>
     <h1>{{ $text['title'] }}</h1>
     <h5>{{ $text['subTitle'] }}</h5>
-    <p>{{ $text['text'] }} <a href="{{ $text['link'] }}">{{ $text['link'] }}</a> within 48 Hours</p>
-
-    <button onclick="window.location.href='{{ $text['link'] }}'">Verify</button>
+    <p>{{ $text['text'] }}</p>
+    <h1>{{ $text['token'] }}</h1>
 </body>
 </html>

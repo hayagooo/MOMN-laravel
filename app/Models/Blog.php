@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,7 @@ class Blog extends Model
 
     public $table = 'blog';
 
-    protected $fillable = ['title', 'banner', 'description', 'id_category'];
+    protected $fillable = ['title', 'banner', 'description', 'id_category', 'viewer'];
 
     public function Category()
     {
@@ -21,5 +22,10 @@ class Blog extends Model
     public function Tags()
     {
         return $this->belongsToMany(Tag_blog::class, 'tag_blog', 'id_blog', 'id_tag');
+    }
+
+    public function getCreatedAtAttribute() {
+        $date = Carbon::create($this->attributes['created_at'])->isoFormat('dddd, D MMMM Y');
+        return $date;
     }
 }

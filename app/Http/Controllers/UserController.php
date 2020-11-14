@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Topup_user;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
@@ -37,13 +40,13 @@ class UserController extends Controller
 
     public function search(Request $request)
     {
-        if($request->has('name') && $request->has('email')) {
+        if($request->has('name') || $request->has('email')) {
             $q = User::query();
             if($request->name != '') {
                 $user = $q->where('name', 'LIKE', '%'.$request->name.'%')->get();
             }
             if($request->email != '') {
-                $user = $q->where('email', $request->email)->get();
+                $user = $q->where('email', 'LIKE', $request->email.'%')->get();
             }
         } else {
             $user = User::all();
@@ -64,6 +67,7 @@ class UserController extends Controller
             $user->saldo = 0;
             $user->api_token = Str::random(25);
             $user->level = $request->level;
+            $user->phone_number = $request->phone_number;
             $user->active = 0;
             $user->avatar = 'avatar.png';
             $user->save();
@@ -80,13 +84,60 @@ class UserController extends Controller
         return $this->onSuccess("User Ditemukan", $user);
     }
 
+    public function getAuth()
+    {
+        $user = Auth::user();
+        return $this->onSuccess("User Ditemukan", $user);
+    }
+
+    public function verifyEmailToken(Request $request, $id)
+    {
+        $user = User::find($id);
+        $token = $request->token;
+        if($user->token_verify == $token) {
+            $timeNow = Carbon::now();
+            $user = User::find($id);
+            $user->email_verified_at = $timeNow;
+            $user->save();
+           return $this->onSuccess("Berhasil Verifikasi", $user);
+        }
+    }
+
+    public function addSaldo(Request $request, $apiToken)
+    {
+        $this->validate($request, [
+            'rekening' => 'nullable',
+            'bank' => 'nullable',
+        ]);
+        $user = User::where('api_token', $apiToken)->first();
+        $saldo = $user->saldo;
+        $user->saldo = $saldo + $request->saldo;
+        $user->save();
+        $topup = new Topup_user();
+        $topup->type = $request->type;
+        $topup->rekening = $request->rekening;
+        $topup->nominal = $request->saldo;
+        $topup->user_id = $user->id;
+        $topup->bank = $request->bank;
+        $topup->save();
+        return $this->onSuccess("Topup Berhasil", $user);
+    }
+
+    public function getTopup()
+    {
+        $user = User::with('Topup')->find(Auth::id());
+        return $this->onSuccess("Topup Berhasil Ditemukan", $user);
+    }
+
     public function uploadImage(Request $request, $id)
     {
         $this->validate($request, [
             'avatar' => 'image|mimes:jpg,png,jpeg'
         ]);
         $user = User::find($id);
-        unlink($this->folderAvatar.'/'.$user->avatar);
+        if(File::isFile($this->folderAvatar.'/'.$user->avatar) && $user->avatar != null) {
+            unlink($this->folderAvatar.'/'.$user->avatar);
+        }
         if(!File::isDirectory($this->folderAvatar)) {
             File::makeDirectory($this->folderAvatar);
         }
@@ -101,23 +152,37 @@ class UserController extends Controller
         return $this->onSuccess("Berhasil Daftar", $user);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $token)
     {
         try {
-            $this->validate($request, [
-                'avatar' => 'image|mimes:jpg,png,jpeg'
-            ]);
-            $user = User::find($id);
+            $user = User::where('api_token', $token)->first();
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->password = $request->password;
-            $user->saldo = $user->saldo;
-            $user->api_token = $user->api_token;
-            $user->level = $request->level;
-            $user->active = $user->active;
-            $user->avatar = $user->avatar;
+            $user->phone_number = $request->phone_number;
             $user->save();
-            return $this->onSuccess("Berhasil Daftar", $user);
+            return $this->onSuccess("Berhasil diupdate", $user);
+        } catch (\Exception $e) {
+            return $this->exception($e);
+        }
+    }
+
+    public function getPayments()
+    {
+        if(Auth::check()) {
+            $user = User::with('Payments')->find(Auth::id());
+            return $this->onSuccess("Pembayaran ditemukan", $user);
+        }
+    }
+
+    public function updatePassword(Request $request, $token)
+    {
+        try {
+            $user = User::where('api_token', $token)->first();
+            if(Hash::check($request->passwordOld, $user->password)) {
+                $user->password = $request->password;
+                $user->save();
+                return $this->onSuccess("Berhasil diupdate", $user);
+            }
         } catch (\Exception $e) {
             return $this->exception($e);
         }
@@ -158,9 +223,11 @@ class UserController extends Controller
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->phone_number = $request->phone_number;
             $user->password = $request->password;
             $user->saldo = 0;
             $user->api_token = Str::random(25);
+            $user->token_verify = Str::random(6);
             $user->level = $request->level;
             $user->active = 0;
             // if($request->hasFile('avatar')) {
@@ -177,13 +244,13 @@ class UserController extends Controller
             // } else {
             //     $user->avatar = 'avatar.png';
             // }
-            // $user->save();
+            $user->save();
             $email = $user->email;
             $textEmail = [
                 'title' => 'Verify your e-mail to finish signing up for MOMN',
-                'subTitle' => 'Thsnk you for choosing MOMN',
-                'text' => "Please confirm that <b>$email</b> is your e-mail address by clicking on the button below or use this link",
-                'link' => App::make('url')->to('/'),
+                'subTitle' => 'Thank you for choosing MOMN',
+                'text' => "Please confirm that <b>$email</b> is your e-mail address with this token.",
+                'token' => $user->token_verify,
             ];
             Mail::to($email)->send(new \App\Mail\VerifyMail($textEmail));
             return $this->onSuccess("Berhasil Daftar", $user);

@@ -16,7 +16,7 @@ class PartnerController extends Controller
     public function __construct()
     {
         $this->folderLogo = public_path().'/images/partner';
-        $this->dimenLogo = 150;
+        $this->dimenLogo = 300;
     }
 
     /**

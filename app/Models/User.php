@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Kreait\Firebase\Messaging\Topic;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable implements
@@ -32,6 +33,12 @@ class User extends Authenticatable implements
         'name',
         'email',
         'password',
+        'phone_number',
+        'avatar',
+        'saldo',
+        'level',
+        'api_token',
+        'token_verify'
     ];
 
     /**
@@ -56,5 +63,20 @@ class User extends Authenticatable implements
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+
+    public function Topup()
+    {
+        return $this->hasMany(Topup_user::class, 'user_id');
+    }
+
+    public function Payments()
+    {
+        return $this->hasMany(Payment::class, 'user_id');
+    }
+
+    public function Bussiness()
+    {
+        return $this->hasMany(Bussiness::class, 'owner_id');
     }
 }

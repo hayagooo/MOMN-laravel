@@ -17,7 +17,7 @@ class PromoController extends Controller
     {
         $this->folderBanner = public_path().'/images/promo';
         $this->folderThumbnail = public_path().'/images/promo/thumbnail';
-        $this->dimenThumbnail = 100;
+        $this->dimenThumbnail = 400;
     }
 
     public function search(Request $request)
@@ -36,6 +36,22 @@ class PromoController extends Controller
         return $this->onSuccess("Promo Ditemukan", $promo);
     }
 
+    public function searchPaginate(Request $request, $page)
+    {
+        if($request->has('title') || $request->has('category')) {
+            $q = Promo::query();
+            if($request->title != '' && $request->title != null) {
+                $promo = $q->where('title', 'LIKE', '%'.$request->title.'%')->paginate($page);
+            }
+            if($request->category != '' && $request->category != null) {
+                $promo = $q->where('id_category', $request->category)->paginate($page);
+            }
+        } else {
+            $promo = Promo::pagination($page);
+        }
+        return $this->onSuccess("Promo Ditemukan", $promo);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -49,7 +65,7 @@ class PromoController extends Controller
 
     public function pagination($page)
     {
-        $promo = Promo::paginate($page);
+        $promo = Promo::orderBy('id', 'DESC')->paginate($page);
         return $this->onSuccess("Promo Ditemukan", $promo);
     }
 

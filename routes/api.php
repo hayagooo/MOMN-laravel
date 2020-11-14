@@ -1,18 +1,21 @@
 <?php
 
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BussinessController;
 use App\Http\Controllers\CategoryBlogController;
 use App\Http\Controllers\CategoryGameController;
 use App\Http\Controllers\CategoryPartnerController;
 use App\Http\Controllers\CategoryPromoController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PricingGameController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TagBlogController;
 use App\Http\Controllers\TestimoniController;
 use App\Http\Controllers\TransactionGameController;
 use App\Http\Controllers\UserController;
+use App\Models\Bussiness;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,10 +37,22 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['cors', 'json.response', 'auth:api']], function () {
     Route::resource('admin/user', UserController::class);
-    Route::post('admin/user/{id}/upload', [UserController::class, 'uploadImage']);
+    Route::get('auth/user', [UserController::class, 'getAuth']);
+    Route::post('user/{apiToken}/topup', [UserController::class, 'addSaldo']);
+    Route::get('user/topup', [UserController::class, 'getTopup']);
+    Route::post('user/{token}/update', [UserController::class, 'update']);
+    Route::post('user/{token}/update/password', [UserController::class, 'update']);
+    Route::post('user/{token}/payments', [PaymentController::class, 'store']);
+    Route::get('user/payments', [UserController::class, 'getPayments']);
+    Route::post('user/q/search', [UserController::class, 'search']);
+    Route::resource('user/business', BussinessController::class);
+    Route::post('user/q/business', [BussinessController::class, 'search']);
 });
 Route::group(['middleware' => ['cors', 'json.response']], function () {
+    Route::get('getting/data/dashboard', [PaymentController::class, 'getDashboard']);
     // Auth
+    Route::post('user/{id}/upload', [UserController::class, 'uploadImage']);
+    Route::post('user/{id}/verify', [UserController::class, 'verifyEmailToken']);
     Auth::routes(['verify' => true]);
     Route::post('request/reset/password', [UserController::class, 'requestResetPassword']);
     Route::post('reset/{token}/password', [UserController::class, 'resetPassword']);
@@ -74,6 +89,8 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::post('category/game/q/', [CategoryGameController::class, 'search']);
     Route::post('price/game/q/', [PricingGameController::class, 'search']);
     Route::post('transaction/game/q/', [TransactionGameController::class, 'search']);
+    Route::post('transaction/game/verify', [TransactionGameController::class, 'verify']);
+    Route::post('transaction/game/{id}/sendEmail', [TransactionGameController::class, 'sendEmail']);
     // Partner
     Route::post('partner/q/', [PartnerController::class, 'search']);
     Route::post('category/partner/q/', [CategoryPartnerController::class, 'search']);
@@ -91,11 +108,14 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     // Pagination //
     // Blog
     Route::get('blog/paginate/{page}', [BlogController::class, 'pagination']);
+    Route::post('blog/q/paginate/{page}', [BlogController::class, 'searchPaginate']);
     Route::get('category/blog/paginate/{page}', [CategoryBlogController::class, 'pagination']);
     Route::get('tags/blog/paginate/{page}', [TagBlogController::class, 'pagination']);
     // Game
     Route::get('game/paginate/{page}', [GameController::class, 'pagination']);
     Route::get('category/game/paginate/{page}', [CategoryGameController::class, 'pagination']);
+    Route::post('game/q/paginate/{page}', [GameController::class, 'searchPaginate']);
+    Route::get('game/not/popular/{page}', [GameController::class, 'notPopular']);
     Route::get('price/game/paginate/{page}', [PricingGameController::class, 'pagination']);
     Route::get('transaction/game/paginate/{page}', [TransactionGameController::class, 'pagination']);
     // Partner
@@ -103,7 +123,14 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::get('category/partner/paginate/{page}', [CategoryPartnerController::class, 'pagination']);
     // Promo
     Route::get('promo/paginate/{page}', [PromoController::class, 'pagination']);
+    Route::post('promo/q/paginate/{page}', [PromoController::class, 'searchPaginate']);
     Route::get('category/promo/paginate/{page}', [CategoryPromoController::class, 'pagination']);
     // Testimoni
     Route::get('testimoni/paginate/{page}', [TestimoniController::class, 'pagination']);
+
+    // Others
+    // addViewer to blog
+    Route::post('blog/{id}/addViewer', [BlogController::class, 'addViewer']);
+    // Most Popular blog
+    Route::get('blog/most/popular', [BlogController::class, 'mostPopular']);
 });
