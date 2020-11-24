@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
+use Socialite;
 
 class UserController extends Controller
 {
@@ -266,17 +267,24 @@ class UserController extends Controller
         $user = User::where('email', $email)->first();
         if($user != null) {
             $email = $user->email;
+            $token = $user->api_token;
             $textEmail = [
                 'title' => 'Hai Ninno, Do you have a request to reset your password ?',
                 'text_top' => 'You  recent to request reset your password you MOMN Account, Use button below to reset it, <b>This password reset is only valid for the next 24 hours</b>',
-                'link' => App::make('url')->to('/'),
-                'text_bottom' => 'For the security, this request was received from a Desktop device using DuckDuckGo Browser, If you not request a password reset, please ignore this email or <a href="#">a</a> if you have questions.'
+                'link' => App::make('url')->to("http://localhost:8080/#/reset/$token/password"),
+                'text_bottom' => 'For the security, this request was received from a Desktop device using DuckDuckGo Browser, If you not request a password reset, please ignore this email or <a href="#">report to our customer serive</a> if you have questions.'
             ];
             Mail::to($email)->send(new \App\Mail\ResetPassword($textEmail));
             return $this->onSuccess("Link Reset Password Sudah Dikirim Melalui Email, Sekarang Check Email Anda", $user);
         } else {
             return $this->onSuccess("User tidak ditemukan", null);
         }
+    }
+
+    public function userToken($token)
+    {
+        $user = User::where('api_token', $token)->first();
+        return $this->onSuccess("User Ditemukan", $user);
     }
 
     public function resetPassword(Request $request, $token)
@@ -291,4 +299,14 @@ class UserController extends Controller
         }
     }
 
+    public function socialIndex()
+    {
+        //
+    }
+
+    public function socialSignup($provider)
+    {
+        $user = Socialite::driver($provider)->stateless()->user();
+        return $this->onSuccess('Berhasil Daftar', $user);
+    }
 }

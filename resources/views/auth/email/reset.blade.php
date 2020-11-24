@@ -9,8 +9,7 @@
 <body>
     <h1>{{ $text['title'] }}</h1>
     <p>{!! $text['text_top'] !!}</p>
-    <button onclick="window.location.href='{{ $text['link'] }}'">Verify</button>
+    <a href="{{ $text['link'] }}">Verify</a>
     <p>{!! $text['text_bottom'] !!}</p>
-
 </body>
 </html>

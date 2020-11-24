@@ -18,8 +18,10 @@
         "laravel/framework": "^8.0",
         "laravel/jetstream": "^1.5",
         "laravel/passport": "^10.0",
+        "laravel/socialite": "^5.1",
         "laravel/tinker": "^2.0",
-        "laravel/ui": "^3.0"
+        "laravel/ui": "^3.0",
+        "pusher/pusher-php-server": "~4.0"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

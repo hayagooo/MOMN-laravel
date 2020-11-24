@@ -58,6 +58,9 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::post('reset/{token}/password', [UserController::class, 'resetPassword']);
     Route::post('signup', [UserController::class, 'register']);
     Route::post('signin', [UserController::class, 'login']);
+    // Social Login
+    Route::post('socialLogin/{provider}', [UserController::class, 'socialSignup']);
+    Route::get('auth/{provider}/callback', [UserController::class, 'socialIndex'])->where('provider', '.*');
 
     // Crud //
     // Blog
